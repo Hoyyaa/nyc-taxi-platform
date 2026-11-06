@@ -3,29 +3,37 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.ruff_cache/
 
 # Environment & secrets
 .env
 .env.*
 !.env.example
+*.pem
+*.key
 
-# Data files
+# Data & DuckDB
 data/raw/
 data/warehouse/
 *.parquet
 *.duckdb
 *.duckdb.wal
 
-# DuckDB temporary files
-*.tmp
-
-# dbt generated artifacts
+# dbt
 dbt_packages/
 target/
 logs/
 
+# Airflow
+airflow/logs/
+airflow/airflow.db
+
 # Jupyter
 .ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.log
 
 # OS & IDE
 .DS_Store
