@@ -1,0 +1,9 @@
+nyc_taxi:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('NYC_TAXI_DB_PATH') }}"
+      threads: 1
+      extensions:
+        - httpfs

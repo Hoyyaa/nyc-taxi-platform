@@ -39,3 +39,5 @@ airflow/airflow.db
 .DS_Store
 Thumbs.db
 .vscode/
+# AWS local configuration
+.aws/

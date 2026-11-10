@@ -1,0 +1,50 @@
+# For Linux credential-file permissions, set AIRFLOW_UID to `id -u` before use.
+# Starting the service does not trigger the paused, manually scheduled DAG.
+services:
+  airflow:
+    build:
+      context: .
+      dockerfile: docker/airflow/Dockerfile
+    image: nyc-taxi-airflow:2.10.5-python3.12
+    user: "${AIRFLOW_UID:-50000}:0"
+    command: standalone
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      AIRFLOW_HOME: /opt/airflow
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__PARALLELISM: "1"
+      AIRFLOW__CORE__MAX_ACTIVE_TASKS_PER_DAG: "1"
+      AIRFLOW__CORE__MAX_ACTIVE_RUNS_PER_DAG: "1"
+      AWS_PROFILE: nyc-taxi
+      AWS_REGION: ap-southeast-1
+      AWS_DEFAULT_REGION: ap-southeast-1
+      AWS_SHARED_CREDENTIALS_FILE: /home/airflow/.aws/credentials
+      AWS_CONFIG_FILE: /home/airflow/.aws/config
+      NYC_TAXI_DB_PATH: /opt/airflow/warehouse/nyc_taxi.duckdb
+      DBT_LOG_PATH: /opt/airflow/logs/dbt
+      DBT_TARGET_PATH: /opt/airflow/dbt_target
+    volumes:
+      # Metadata, logs, dbt artifacts and the shared warehouse survive recreation.
+      - airflow_state:/opt/airflow
+      - ./airflow/dags:/opt/airflow/dags:ro
+      - ./scripts:/opt/nyc-taxi/scripts:ro
+      - ./dbt/nyc_taxi:/opt/nyc-taxi/dbt/nyc_taxi:ro
+      - type: bind
+        source: ./data/raw
+        target: /opt/nyc-taxi/data/raw
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${HOME}/.aws
+        target: /home/airflow/.aws
+        read_only: true
+        bind:
+          create_host_path: false
+
+volumes:
+  airflow_state:

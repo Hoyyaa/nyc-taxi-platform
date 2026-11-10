@@ -14,4 +14,3 @@ print("Number of row groups:", parquet_file.metadata.num_row_groups)
 
 print("\n=== PARQUET SCHEMA ===")
 print(parquet_file.schema_arrow)
-

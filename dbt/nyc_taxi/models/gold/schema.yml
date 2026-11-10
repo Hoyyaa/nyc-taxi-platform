@@ -1,0 +1,22 @@
+version: 2
+models:
+  - name: published_silver
+    description: Published January 2025 Silver Parquet; independent of the Bronze-backed Silver view.
+  - name: fct_trips
+    description: One row per retained Silver trip, without synthetic identity or deduplication. trip_amount is total_amount with null replaced by zero, including negative amounts unchanged.
+    columns:
+      - name: pickup_date
+        data_tests: [not_null]
+      - name: pickup_datetime
+        data_tests: [not_null]
+      - name: dropoff_datetime
+        data_tests: [not_null]
+      - name: trip_amount
+        data_tests: [not_null]
+  - name: agg_daily_trips
+    description: One row per pickup date. Revenue sums trip_amount; amount average includes zero for null original amounts. Distance and duration averages ignore nulls; duration is minutes.
+    columns:
+      - name: pickup_date
+        data_tests: [not_null, unique]
+  - name: agg_pickup_location
+    description: One row per pickup location ID, including one NULL group. No location names or zone lookup. Revenue and average use the fact trip_amount null-to-zero policy.

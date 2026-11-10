@@ -2,12 +2,19 @@ import duckdb
 
 db_path = "data/warehouse/nyc_taxi.duckdb"
 
-con = duckdb.connect(db_path)
+con = duckdb.connect(db_path, read_only=True)
 
-result = con.execute("SELECT 1 + 1").fetchone()
+try:
+    result = con.execute("""
+        SELECT
+            table_schema,
+            table_name,
+            table_type
+        FROM information_schema.tables
+        WHERE table_name = 'silver_yellow_trips'
+    """).fetchall()
 
-print("DuckDB version:", duckdb.__version__)
-print("SQL result:", result[0])
-print("Database:", db_path)
+    print("Silver objects:", result)
 
-con.close()
+finally:
+    con.close()

@@ -1,0 +1,21 @@
+version: 2
+models:
+  - name: silver_yellow_trips
+    description: January 2025 Yellow Taxi trips; 25 columns with source lineage.
+    columns:
+      - name: tpep_pickup_datetime
+        data_tests: [not_null]
+      - name: tpep_dropoff_datetime
+        data_tests: [not_null]
+      - name: source_month
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['2025-01']
+      - name: source_file
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['yellow_tripdata_2025-01.parquet']
